@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#7a0000">
+  <meta name="description" content="Squeeze Me — reduce and enhance images and PDF files directly in your browser.">
+  <title>SQUEEZE ME — File Reducer & Enhancer</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Squeeze Me home"><span class="brand-mark">S</span><span>SQUEEZE <b>ME</b><small>FILE TOOLS, SIMPLIFIED</small></span></a>
+    <span class="privacy"><span class="privacy-dot"></span> Files stay on your device</span>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow"><span>●</span> YOUR PERSONAL FILE WORKSPACE</div>
+      <h1>Smaller files.<br><em>Better quality.</em></h1>
+      <p>Compress images and PDFs or enhance their clarity — right in your browser. No account, no upload, no fuss.</p>
+      <div class="hero-tags"><span>JPG</span><span>PNG</span><span>WEBP</span><span>PDF</span><span>100% browser-side</span></div>
+    </section>
+
+    <section class="workspace">
+      <div class="mode-tabs" role="tablist" aria-label="Choose tool">
+        <button class="mode-tab active" id="reduceTab" data-mode="reduce" role="tab" aria-selected="true"><span>↓</span> Reducer</button>
+        <button class="mode-tab" id="enhanceTab" data-mode="enhance" role="tab" aria-selected="false"><span>✦</span> Enhancer</button>
+      </div>
+
+      <div class="panel">
+        <div class="section-heading"><div><div class="section-kicker">STEP 01</div><h2>Choose your file</h2></div><span class="step-number">01</span></div>
+        <label class="dropzone" id="dropzone" for="fileInput">
+          <input id="fileInput" type="file" accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf">
+          <span class="upload-icon">↑</span>
+          <strong id="fileTitle">Drop your image or PDF here</strong>
+          <span id="fileSub">or <u>browse files</u> from your device</span>
+          <small>Supported formats: JPG, JPEG, PNG, WEBP, PDF</small>
+        </label>
+        <div class="file-info hidden" id="fileInfo">
+          <div class="file-type" id="fileBadge">IMG</div>
+          <div class="file-meta"><strong id="fileName">filename.jpg</strong><span id="fileSize">0 KB</span></div>
+          <button class="remove-file" id="removeFile" aria-label="Remove selected file">×</button>
+        </div>
+      </div>
+
+      <div class="panel settings-panel">
+        <div class="section-heading"><div><div class="section-kicker">STEP 02</div><h2 id="settingsTitle">Reducer settings</h2></div><span class="step-number">02</span></div>
+        <div id="reducerSettings">
+          <div class="field-grid">
+            <label class="field"><span>Target file size</span><div class="input-unit"><input id="targetSize" type="number" min="1" step="1" value="500" aria-label="Target file size"><select id="targetUnit" aria-label="Target size unit"><option>KB</option><option>MB</option></select></div><small>We'll try to get as close as possible.</small></label>
+            <label class="field"><span>PDF compression</span><select id="pdfMode"><option value="smart">Smart / preserve quality</option><option value="max">Maximum compression</option></select><small>Maximum mode converts pages to images.</small></label>
+          </div>
+          <div class="quality-note"><span>ⓘ</span> Image reduction exports to JPEG. Transparent areas are filled with white.</div>
+        </div>
+        <div id="enhancerSettings" class="hidden">
+          <div class="field-grid">
+            <label class="field"><span>Upscale</span><select id="scale"><option value="1.5">1.5×</option><option value="2" selected>2×</option><option value="3">3×</option></select><small>Increase pixel dimensions.</small></label>
+            <label class="field"><span>Enhancement strength</span><select id="strength"><option value="balanced">Balanced</option><option value="sharp">Sharp</option><option value="strong">Strong</option></select><small>Adjust sharpness and contrast.</small></label>
+          </div>
+          <div class="quality-note"><span>ⓘ</span> Enhancement can improve appearance, but cannot restore detail that was never captured.</div>
+        </div>
+        <button class="primary-btn" id="processBtn" disabled><span id="processIcon">↓</span><span id="processLabel">SQUEEZE IT!</span><span class="btn-arrow">↗</span></button>
+        <div class="progress-wrap hidden" id="progressWrap"><div class="progress-label"><span id="progressText">Preparing your file…</span><span id="progressPercent">0%</span></div><div class="progress-track"><div id="progressBar"></div></div></div>
+        <div class="status" id="status" role="status">Ready when you are.</div>
+      </div>
+
+      <section class="result panel hidden" id="resultPanel">
+        <div class="section-heading"><div><div class="section-kicker">STEP 03</div><h2>Your file is ready</h2></div><span class="success-icon">✓</span></div>
+        <div class="stats">
+          <div class="stat"><span>Original size</span><strong id="originalStat">—</strong></div>
+          <div class="stat"><span>New size</span><strong id="newStat">—</strong></div>
+          <div class="stat"><span>Size change</span><strong id="changeStat">—</strong></div>
+        </div>
+        <p class="result-message" id="resultMessage"></p>
+        <button class="download-btn" id="downloadBtn"><span>↓</span> Download processed file</button>
+      </section>
+    </section>
+
+    <section class="feature-row">
+      <div><span class="feature-icon">⌁</span><strong>Private by design</strong><p>Your file is processed locally in this browser, not sent to a server.</p></div>
+      <div><span class="feature-icon">◈</span><strong>Simple controls</strong><p>Choose a target size or tune image enhancement in a few clicks.</p></div>
+      <div><span class="feature-icon">↗</span><strong>Instant download</strong><p>Compare the result, then save it directly to your device.</p></div>
+    </section>
+    <footer><span>© SQUEEZE ME</span><span>Made for your files, not your data.</span></footer>
+  </main>
+</body>
+</html>
